@@ -28,28 +28,16 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/api/books", (AppDbContext db, int pageNumber = 1, int pageSize = 5, bool sortByTitle = false) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var query = db.Books.AsQueryable();
+    if (sortByTitle) query = query.OrderBy(b => b.Title);
 
-app.MapGet("/api/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var totalCount = query.Count();
+    var books = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+    return Results.Ok(new { books, totalCount });
+});
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

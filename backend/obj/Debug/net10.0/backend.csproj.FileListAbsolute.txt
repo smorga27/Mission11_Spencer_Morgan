@@ -146,3 +146,4 @@ C:\Users\spenc\OneDrive - Brigham Young University\IS 413\Mission11_Spencer_Morg
 C:\Users\spenc\OneDrive - Brigham Young University\IS 413\Mission11_Spencer_Morgan\backend\obj\Debug\net10.0\backend.pdb
 C:\Users\spenc\OneDrive - Brigham Young University\IS 413\Mission11_Spencer_Morgan\backend\obj\Debug\net10.0\backend.genruntimeconfig.cache
 C:\Users\spenc\OneDrive - Brigham Young University\IS 413\Mission11_Spencer_Morgan\backend\obj\Debug\net10.0\ref\backend.dll
+C:\Users\spenc\OneDrive - Brigham Young University\IS 413\Mission11_Spencer_Morgan\backend\obj\Debug\net10.0\backend.sourcelink.json
