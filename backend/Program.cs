@@ -28,15 +28,25 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
-app.MapGet("/api/books", (AppDbContext db, int pageNumber = 1, int pageSize = 5, bool sortByTitle = false) =>
+app.MapGet("/api/books", (AppDbContext db, int pageNumber = 1, int pageSize = 5, bool sortByTitle = false, string? selectedCategory = null) =>
 {
     var query = db.Books.AsQueryable();
+
+    if (!string.IsNullOrEmpty(selectedCategory))
+        query = query.Where(b => b.Category == selectedCategory);
+
     if (sortByTitle) query = query.OrderBy(b => b.Title);
 
     var totalCount = query.Count();
     var books = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
     return Results.Ok(new { books, totalCount });
+});
+
+app.MapGet("/api/books/categories", (AppDbContext db) =>
+{
+    var categories = db.Books.Select(b => b.Category).Distinct().OrderBy(c => c).ToList();
+    return Results.Ok(categories);
 });
 
 app.Run();
