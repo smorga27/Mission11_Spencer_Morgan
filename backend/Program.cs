@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Data;
+using backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,42 @@ app.MapGet("/api/books/categories", (AppDbContext db) =>
 {
     var categories = db.Books.Select(b => b.Category).Distinct().OrderBy(c => c).ToList();
     return Results.Ok(categories);
+});
+
+app.MapPost("/api/books", async (Book book, AppDbContext db) =>
+{
+    book.BookID = 0;
+    db.Books.Add(book);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/books/{book.BookID}", book);
+});
+
+app.MapPut("/api/books/{id}", async (int id, Book input, AppDbContext db) =>
+{
+    var book = await db.Books.FindAsync(id);
+    if (book is null) return Results.NotFound();
+
+    book.Title = input.Title;
+    book.Author = input.Author;
+    book.Publisher = input.Publisher;
+    book.ISBN = input.ISBN;
+    book.Classification = input.Classification;
+    book.Category = input.Category;
+    book.PageCount = input.PageCount;
+    book.Price = input.Price;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+app.MapDelete("/api/books/{id}", async (int id, AppDbContext db) =>
+{
+    var book = await db.Books.FindAsync(id);
+    if (book is null) return Results.NotFound();
+
+    db.Books.Remove(book);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
 });
 
 app.Run();
